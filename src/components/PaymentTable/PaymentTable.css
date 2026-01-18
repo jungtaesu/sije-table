@@ -1,0 +1,71 @@
+.pt-th-group {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  font-size: 13px;
+}
+
+.pt-th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pt-th-right {
+  text-align: right;
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pt-td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pt-td-right {
+  text-align: right;
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pt-td-total-label {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 700;
+  background: #f8fafc;
+}
+
+.pt-td-total-num {
+  text-align: right;
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 700;
+  background: #f8fafc;
+}
+
+.pt-td-dim {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  white-space: nowrap;
+  background: #f8fafc;
+}
+
+.pt-divider-right {
+  border-right: 2px solid #e5e7eb;
+}

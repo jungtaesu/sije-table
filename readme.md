@@ -30,13 +30,20 @@ npm run dev
 ```
 src/
 ├── components/
-│   └── PaymentTable/      # 메인 컴포넌트
+│   ├── GroupSection/      # 행 그룹(SalesOrder) 렌더링
+│   │   └── GroupSection.tsx
+│   └── PaymentTable/      # 메인 테이블 컴포넌트
 │       ├── PaymentTable.tsx
-│       └── PaymentTable.css (선택 사항)
+│       ├── PaymentTable.css
+│       └── FragmentPayCols.tsx # 컬럼 헤더 조각 재사용
 ├── data/
 │   └── mock.json          # 제공된 Mock 데이터
 ├── domain/
-│   └── buildTableModel.ts # 핵심 로직: 원본 데이터를 테이블 뷰 모델로 변환 (그룹핑, 합계 등)
+│   └── buildTableModel.ts # 핵심 로직: 원본 데이터를 테이블 뷰 모델로 변환
+├── hooks/
+│   └── usePaymentTableData.ts # 데이터 필터링 및 가공 로직 분리
+├── utils/
+│   └── format.ts          # 유틸리티 (화폐 포맷 등)
 ├── types.ts               # TypeScript 타입 정의
 ├── App.tsx                # 엔트리 컴포넌트
 └── main.tsx               # 진입점
@@ -49,11 +56,12 @@ src/
     -   **장점**: React 컴포넌트는 렌더링에만 집중하여 코드가 깔끔해지고, 로직에 대한 유닛 테스트가 용이합니다.
     -   **단점**: `TableVM`, `GroupVM` 같은 중간 뷰 모델(View Model) 타입 정의가 필요하여 보일러플레이트가 다소 발생합니다.
 
-2.  **필터링 아키텍처**
-    -   필터링은 `buildTableModel` 함수에 데이터를 전달하기 **전** 단계에서 원본 `consumptions` 리스트에 대해 수행됩니다.
-    -   **이유**: 이를 통해 그룹핑 및 Sub Total 로직이 현재 화면에 보이는 아이템 기준으로 자동 재계산되도록 했습니다. (필터링된 뷰에 맞는 소계 표시)
-    -   **트레이드오프**: "필터 옵션"(드롭다운 후보군)은 필터링된 결과가 아니라 **전체** 데이터셋(`mock.consumptions`)에서 추출합니다. 이는 현재 뷰가 비어있더라도 사용자가 전체 옵션을 볼 수 있게 하고, 다중 컬럼 필터링 시 옵션이 사라져 혼란을 주는 것을 방지하기 위함입니다.
+2.  **Custom Hook을 통한 관심사 분리 (Data Logic Separation)**
+    -   데이터 필터링, 고유값 추출, 뷰 모델 생성, 합계 계산 등의 "데이터 처리 흐름"을 `usePaymentTableData` 훅으로 완전히 분리했습니다.
+    -   **의도**: UI 컴포넌트(`PaymentTable`)는 화면을 그리는 방법(How to render)에만 집중하고, 어떤 데이터를 그릴지(What to render)는 훅이 담당하도록 책임을 나눴습니다.
+    -   **효과**: 컴포넌트 내부의 코드가 획기적으로 줄어들어 가독성이 높아졌으며, 추후 비즈니스 로직 변경 시 훅 내부만 수정하면 되므로 유지보수성이 향상되었습니다.
 
-3.  **표준 HTML Table 사용**
-    -   CSS Grid나 Flexbox 대신 기본 `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<td>` 태그를 사용했습니다.
-    -   **이유**: 표 데이터(Tabular Data)에 대한 시맨틱 정확성을 지키고, 접근성을 높이며, 그룹 헤더나 Sub Total 행의 `colspan` 처리를 자연스럽게 하기 위함입니다.
+3.  **컴포넌트 파편화 및 스타일 최적화**
+    -   **컴포넌트 분할**: 거대한 테이블을 관리하기 쉽게 만들기 위해 반복되는 행 그룹은 `GroupSection`으로, 중복되는 헤더 컬럼은 `FragmentPayCols`로 분할하였습니다.
+    -   **CSS 추출**: 초기 개발 속도를 위해 사용했던 인라인 스타일을 `PaymentTable.css`로 추출하여 JSX 가독성을 높이고 렌더링 성능을 최적화했습니다.
+    -   **트레이드오프**: 파일 개수가 늘어나는 단점이 있지만, 각 파일의 역할이 명확해져 협업과 디버깅에 유리하다고 판단했습니다.
