@@ -1,0 +1,41 @@
+{
+  "payments": [
+    {
+      "id": 17,
+      "paymentStatus": "NOT_YET",
+      "paymentDueDate": "2025-10-14T00:00:00.000Z",
+      "requestedAt": null,
+      "pendingAt": null,
+      "paidAt": null,
+      "memo": null,
+      "sourcingFiles": [],
+      "financeFiles": []
+    },
+    {
+      "id": 18,
+      "paymentStatus": "NOT_YET",
+      "paymentDueDate": "2025-11-01T00:00:00.000Z",
+      "requestedAt": null,
+      "pendingAt": null,
+      "paidAt": null,
+      "memo": "New Payment for Order 822",
+      "sourcingFiles": [],
+      "financeFiles": []
+    }
+  ],
+  "consumptions": [
+    { "id": 294, "unitPrice": 4, "orderQuantity": 100, "orderAmount": 400, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Lemon", "sopoNo": "PO_1", "unit": "yds", "garmentColorName": "Lemon", "garmentSize": { "id": 3, "name": "M", "orderNum": 4 }, "salesOrder": { "id": 125, "styleNumber": "AIN26", "styleCode": "010", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } },
+    { "id": 295, "unitPrice": 2, "orderQuantity": 822, "orderAmount": 1644, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Salmon", "sopoNo": "PO_2", "unit": "yds", "garmentColorName": "Salmon", "garmentSize": { "id": 4, "name": "L", "orderNum": 5 }, "salesOrder": { "id": 125, "styleNumber": "AIN26", "styleCode": "010", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } },
+    { "id": 296, "unitPrice": 2, "orderQuantity": 400, "orderAmount": 800, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Salmon", "sopoNo": "PO_2", "unit": "yds", "garmentColorName": "Salmon", "garmentSize": { "id": 2, "name": "S", "orderNum": 3 }, "salesOrder": { "id": 125, "styleNumber": "AIN26", "styleCode": "010", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } },
+    { "id": 297, "unitPrice": 3, "orderQuantity": 1000, "orderAmount": 3000, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Salmon", "sopoNo": "PO_2", "unit": "yds", "garmentColorName": "Salmon", "garmentSize": { "id": 3, "name": "M", "orderNum": 4 }, "salesOrder": { "id": 126, "styleNumber": "NEW_STYLE", "styleCode": "020", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } },
+    { "id": 298, "unitPrice": 1, "orderQuantity": 100, "orderAmount": 100, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Lemon", "sopoNo": "PO_1", "unit": "yds", "garmentColorName": "Lemon", "garmentSize": { "id": 2, "name": "S", "orderNum": 3 }, "salesOrder": { "id": 126, "styleNumber": "NEW_STYLE", "styleCode": "020", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } },
+    { "id": 299, "unitPrice": 6, "orderQuantity": 911, "orderAmount": 5466, "fabricName": "Cotton", "fabricClass": "Solid", "fabricDetail": "Description", "supplierItemCode": "Supplier-0351", "brandItemCode": null, "colorName": "Lemon", "sopoNo": "PO_1", "unit": "yds", "garmentColorName": "Lemon", "garmentSize": { "id": 4, "name": "L", "orderNum": 5 }, "salesOrder": { "id": 126, "styleNumber": "NEW_STYLE", "styleCode": "020", "createUser": { "id": 3, "name": "sije", "engName": "sije", "profileImage": "https://backendmonolis.s3.amazonaws.com/1756346915750/operator3.png" } } }
+  ],
+  "paymentBreakdowns": [
+    { "id": "b3cb76f3-c2bb-41ae-bf42-cf64a83655d5", "type": "ITEM", "shippedQuantity": 30, "unitPrice": 2, "amount": 60, "itemId": 294, "paymentId": 17 },
+    { "id": "9cc6b79a-bfac-4efc-af75-4c4fea71cd74", "type": "ITEM", "shippedQuantity": 10, "unitPrice": 0, "amount": 0, "itemId": 296, "paymentId": 17 },
+    { "id": "24d15e26-cf27-457a-a7f3-eb757d1d1c0f", "type": "ITEM", "shippedQuantity": 0, "unitPrice": 20, "amount": 0, "itemId": 298, "paymentId": 17 },
+    { "id": "10abf4dd-35d8-462c-9abb-97d2371769d7", "type": "ITEM", "shippedQuantity": 2, "unitPrice": 0, "amount": 0, "itemId": 299, "paymentId": 17 },
+    { "id": "breakdown-added-1", "type": "ITEM", "shippedQuantity": 822, "unitPrice": 2, "amount": 1644, "itemId": 295, "paymentId": 18 }
+  ]
+}
