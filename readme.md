@@ -4,6 +4,10 @@
 
 ## 실행 방법
 
+``` 
+Node.js: >=20.0.0 (안정성을 위해 LTS 버전 권장)
+npm: >=10.0.0 (Node 20에 포함된 버전)
+
 ```bash
 # 의존성 설치
 npm install (또는 pnpm install, yarn)
@@ -16,14 +20,14 @@ npm run dev
 
 ## 요구사항 체크리스트
 
-- [x] **Sub Total**: `salesOrder.id` 기준으로 consumptions를 그룹핑하고, 각 그룹별 Sub Total(orderAmount 합계) 표시.
-- [x] **Search UI**: 상단에 검색 필터 행을 열고 닫을 수 있는 토글 버튼 구현.
-- [x] **Filtering**: 
+- **Sub Total**: `salesOrder.id` 기준으로 consumptions를 그룹핑하고, 각 그룹별 Sub Total(orderAmount 합계) 표시.
+- **Search UI**: 상단에 검색 필터 행을 열고 닫을 수 있는 토글 버튼 구현.
+- **Filtering**: 
     - 검색 행에 각 컬럼별 드롭다운 제공.
     - 드롭다운 후보군은 데이터셋의 고유값(Unique Values)으로 구성.
     - 기본값은 "All".
     - 다중 필터 선택 시 AND 조건 적용.
-- [x] **Mapping**: Payment, Breakdown, Consumption 간의 매핑 관계를 화면에서 식별 가능하도록 구현.
+- **Mapping**: Payment, Breakdown, Consumption 간의 매핑 관계를 화면에서 식별 가능하도록 구현.
 
 ## 폴더 구조
 
