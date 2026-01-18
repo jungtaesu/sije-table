@@ -1,7 +1,7 @@
 import mock from "../../data/mock.json";
 import type { MockData, Consumption } from "../../types";
 import { buildTableModel } from "../../domain/buildTableModel";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, Fragment, type CSSProperties } from "react";
 
 function money(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 0 });
@@ -13,7 +13,7 @@ type ColDef = {
   label: string;
   getValue: (c: Consumption) => string | number;
   width?: number; // 너비 고정을 위해 추가
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 const COLUMNS: ColDef[] = [
@@ -198,7 +198,7 @@ export default function PaymentTable() {
               ))}
 
               <th colSpan={2} style={thGroup}>
-                Total (Order)
+                Total (Shipped)
               </th>
             </tr>
 
@@ -245,8 +245,8 @@ export default function PaymentTable() {
               ))}
 
               {/* Total columns */}
-              <th style={{ ...thRight, width: 90 }}>Qty</th>
-              <th style={{ ...thRight, width: 100 }}>Amount</th>
+              <th style={{ ...thRight, width: 90 }}>Shipped Qty</th>
+              <th style={{ ...thRight, width: 100 }}>Total Amount</th>
             </tr>
           </thead>
 
@@ -265,16 +265,24 @@ export default function PaymentTable() {
               {vm.payments.map((p) => {
                 const total = paymentGrandTotals[p.id];
                 return (
-                  <React.Fragment key={p.id}>
+                  <Fragment key={p.id}>
                     <td style={tdTotalNum}>{total.shipped > 0 ? total.shipped.toLocaleString() : ""}</td>
                     <td style={tdDim} />
                     <td style={tdTotalNum}>{total.amount > 0 ? money(total.amount) : ""}</td>
-                  </React.Fragment>
+                  </Fragment>
                 );
               })}
 
-              <td style={tdTotalNum}>{vm.grandTotalOrderQuantity.toLocaleString()}</td>
-              <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
+              <td style={tdTotalNum}>
+                {Object.values(paymentGrandTotals)
+                  .reduce((acc, curr) => acc + curr.shipped, 0)
+                  .toLocaleString()}
+              </td>
+              <td style={tdTotalNum}>
+                {money(
+                  Object.values(paymentGrandTotals).reduce((acc, curr) => acc + curr.amount, 0)
+                )}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -315,10 +323,25 @@ function GroupSection({
     return { pid, shipped, amount };
   });
 
+  // 누적 합계 (SubTotal용)
+  const totalShippedSum = paySub.reduce((acc, curr) => acc + curr.shipped, 0);
+  const totalAmountSum = paySub.reduce((acc, curr) => acc + curr.amount, 0);
+
   return (
     <>
       {group.rows.map((r) => {
         const c = r.consumption;
+        
+        // Row별 누적 합계 계산
+        const rowShipped = paymentIds.reduce((sum, pid) => {
+           const cell = r.payableByPaymentId[pid];
+           return sum + (cell?.shippedQuantity ?? 0);
+        }, 0);
+        const rowAmount = paymentIds.reduce((sum, pid) => {
+           const cell = r.payableByPaymentId[pid];
+           return sum + (cell?.amount ?? 0);
+        }, 0);
+
         return (
           <tr key={c.id}>
             <td style={td}>{c.salesOrder.styleNumber}</td>
@@ -333,16 +356,16 @@ function GroupSection({
             {paymentIds.map((pid) => {
               const cell = r.payableByPaymentId[pid];
               return (
-                <React.Fragment key={`${pid}:${c.id}`}>
+                <Fragment key={`${pid}:${c.id}`}>
                   <td style={tdRight}>{cell ? cell.shippedQuantity.toLocaleString() : ""}</td>
                   <td style={tdRight}>{cell ? cell.unitPrice.toLocaleString() : ""}</td>
                   <td style={tdRight}>{cell ? cell.amount.toLocaleString() : ""}</td>
-                </React.Fragment>
+                </Fragment>
               );
             })}
 
-            <td style={tdRight}>{c.orderQuantity.toLocaleString()}</td>
-            <td style={tdRight}>{c.orderAmount.toLocaleString()}</td>
+            <td style={tdRight}>{rowShipped.toLocaleString()}</td>
+            <td style={tdRight}>{rowAmount.toLocaleString()}</td>
           </tr>
         );
       })}
@@ -355,22 +378,22 @@ function GroupSection({
         <td style={tdTotalNum}>{money(group.subTotalOrderAmount)}</td>
 
         {paySub.map((s) => (
-          <React.Fragment key={s.pid}>
+          <Fragment key={s.pid}>
             <td style={tdTotalNum}>{s.shipped ? s.shipped.toLocaleString() : ""}</td>
             <td style={tdDim} />
             <td style={tdTotalNum}>{s.amount ? money(s.amount) : ""}</td>
-          </React.Fragment>
+          </Fragment>
         ))}
 
-        <td style={tdTotalNum}>{group.subTotalOrderQuantity.toLocaleString()}</td>
-        <td style={tdTotalNum}>{money(group.subTotalOrderAmount)}</td>
+        <td style={tdTotalNum}>{totalShippedSum.toLocaleString()}</td>
+        <td style={tdTotalNum}>{money(totalAmountSum)}</td>
       </tr>
     </>
   );
 }
 
 // ---- styles (최소) ----
-const thGroup: React.CSSProperties = {
+const thGroup: CSSProperties = {
   textAlign: "left",
   padding: "12px 10px",
   borderBottom: "1px solid #e5e7eb",
@@ -378,7 +401,7 @@ const thGroup: React.CSSProperties = {
   fontSize: 13,
 };
 
-const th: React.CSSProperties = {
+const th: CSSProperties = {
   textAlign: "left",
   padding: "10px",
   borderBottom: "1px solid #e5e7eb",
@@ -387,40 +410,40 @@ const th: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-const thRight: React.CSSProperties = {
+const thRight: CSSProperties = {
   ...th,
   textAlign: "right",
 };
 
-const td: React.CSSProperties = {
+const td: CSSProperties = {
   padding: "10px",
   borderBottom: "1px solid #f1f5f9",
   fontSize: 12,
   whiteSpace: "nowrap",
 };
 
-const tdRight: React.CSSProperties = {
+const tdRight: CSSProperties = {
   ...td,
   textAlign: "right",
 };
 
-const tdTotalLabel: React.CSSProperties = {
+const tdTotalLabel: CSSProperties = {
   ...td,
   fontWeight: 700,
   background: "#f8fafc",
 };
 
-const tdTotalNum: React.CSSProperties = {
+const tdTotalNum: CSSProperties = {
   ...tdRight,
   fontWeight: 700,
   background: "#f8fafc",
 };
 
-const tdDim: React.CSSProperties = {
+const tdDim: CSSProperties = {
   ...td,
   background: "#f8fafc",
 };
 
-const dividerRight: React.CSSProperties = {
+const dividerRight: CSSProperties = {
   borderRight: "2px solid #e5e7eb",
 };
