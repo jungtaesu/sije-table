@@ -36,6 +36,8 @@
     { "id": "9cc6b79a-bfac-4efc-af75-4c4fea71cd74", "type": "ITEM", "shippedQuantity": 10, "unitPrice": 0, "amount": 0, "itemId": 296, "paymentId": 17 },
     { "id": "24d15e26-cf27-457a-a7f3-eb757d1d1c0f", "type": "ITEM", "shippedQuantity": 0, "unitPrice": 20, "amount": 0, "itemId": 298, "paymentId": 17 },
     { "id": "10abf4dd-35d8-462c-9abb-97d2371769d7", "type": "ITEM", "shippedQuantity": 2, "unitPrice": 0, "amount": 0, "itemId": 299, "paymentId": 17 },
-    { "id": "breakdown-added-1", "type": "ITEM", "shippedQuantity": 822, "unitPrice": 2, "amount": 1644, "itemId": 295, "paymentId": 18 }
+    { "id": "breakdown-added-1", "type": "ITEM", "shippedQuantity": 822, "unitPrice": 2, "amount": 1644, "itemId": 295, "paymentId": 18 },
+    { "id": "dummy-so126-p17", "type": "ITEM", "shippedQuantity": 100, "unitPrice": 3, "amount": 300, "itemId": 297, "paymentId": 17 },
+    { "id": "dummy-so126-p18", "type": "ITEM", "shippedQuantity": 500, "unitPrice": 3, "amount": 1500, "itemId": 297, "paymentId": 18 }
   ]
 }

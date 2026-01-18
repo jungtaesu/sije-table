@@ -12,18 +12,19 @@ type ColDef = {
   key: string;
   label: string;
   getValue: (c: Consumption) => string | number;
+  width?: number; // 너비 고정을 위해 추가
   style?: React.CSSProperties;
 };
 
 const COLUMNS: ColDef[] = [
-  { key: "styleNumber", label: "Style No.", getValue: (c) => c.salesOrder.styleNumber },
-  { key: "supplierItemCode", label: "Supplier Item #", getValue: (c) => c.supplierItemCode },
-  { key: "fabricName", label: "Fabric Name", getValue: (c) => c.fabricName },
-  { key: "fabricColor", label: "Fabric Color", getValue: (c) => c.colorName },
-  { key: "orderQuantity", label: "Order Qty", getValue: (c) => c.orderQuantity, style: { textAlign: "right" } },
-  { key: "unit", label: "Unit", getValue: (c) => c.unit },
-  { key: "unitPrice", label: "U/price", getValue: (c) => c.unitPrice, style: { textAlign: "right" } },
-  { key: "orderAmount", label: "Amount", getValue: (c) => c.orderAmount, style: { textAlign: "right" } },
+  { key: "styleNumber", label: "Style No.", getValue: (c) => c.salesOrder.styleNumber, width: 100 },
+  { key: "supplierItemCode", label: "Supplier Item #", getValue: (c) => c.supplierItemCode, width: 120 },
+  { key: "fabricName", label: "Fabric Name", getValue: (c) => c.fabricName, width: 100 },
+  { key: "fabricColor", label: "Fabric Color", getValue: (c) => c.colorName, width: 80 },
+  { key: "orderQuantity", label: "Order Qty", getValue: (c) => c.orderQuantity, style: { textAlign: "right" }, width: 50 },
+  { key: "unit", label: "Unit", getValue: (c) => c.unit, width: 40 },
+  { key: "unitPrice", label: "U/price", getValue: (c) => c.unitPrice, style: { textAlign: "right" }, width: 50 },
+  { key: "orderAmount", label: "Amount", getValue: (c) => c.orderAmount, style: { textAlign: "right" }, width: 80 },
 ];
 
 export default function PaymentTable() {
@@ -77,7 +78,30 @@ export default function PaymentTable() {
   }, [filters]);
 
   const vm = buildTableModel(filteredData as MockData);
+  // Payment 별 Grand Total 미리 계산 (G.TTL 행용)
+  const paymentGrandTotals = useMemo(() => {
+    const totals: Record<number, { shipped: number; amount: number }> = {};
+    
+    // 초기화
+    vm.payments.forEach((p) => {
+      totals[p.id] = { shipped: 0, amount: 0 };
+    });
 
+    // 집계
+    vm.groups.forEach((g) => {
+      g.rows.forEach((r) => {
+        vm.payments.forEach((p) => {
+          const cell = r.payableByPaymentId[p.id];
+          if (cell) {
+            totals[p.id].shipped += cell.shippedQuantity ?? 0;
+            totals[p.id].amount += cell.amount ?? 0;
+          }
+        });
+      });
+    });
+    
+    return totals;
+  }, [vm]);
   const handleToggleSearch = () => {
     setIsSearchOpen((prev) => !prev);
     // 닫을 때 필터 초기화 여부는 기획에 따라 다르지만, 보통 유지하거나 초기화함. 
@@ -110,7 +134,7 @@ export default function PaymentTable() {
       </div>
 
       <div style={{ overflow: "auto", border: "1px solid #e5e7eb", borderRadius: 8 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 1100 }}>
+        <table style={{ borderCollapse: "collapse", width: "max-content", tableLayout: "fixed" }}>
           <thead>
             {/* 1) 상단 그룹 헤더: Ordered / Payable(결제들) / Total */}
             <tr>
@@ -210,7 +234,7 @@ export default function PaymentTable() {
             {/* 3) 컬럼 헤더 */}
             <tr>
               {COLUMNS.map((col) => (
-                <th key={col.key} style={{ ...th, ...(col.key === 'orderAmount' ? { ...thRight, ...dividerRight } : (col.style?.textAlign === 'right' ? thRight : th)) }}>
+                <th key={col.key} style={{ ...th, width: col.width, ...(col.key === 'orderAmount' ? { ...thRight, ...dividerRight } : (col.style?.textAlign === 'right' ? thRight : th)) }}>
                   {col.label}
                 </th>
               ))}
@@ -221,8 +245,8 @@ export default function PaymentTable() {
               ))}
 
               {/* Total columns */}
-              <th style={thRight}>Qty</th>
-              <th style={thRight}>Amount</th>
+              <th style={{ ...thRight, width: 90 }}>Qty</th>
+              <th style={{ ...thRight, width: 100 }}>Amount</th>
             </tr>
           </thead>
 
@@ -238,9 +262,16 @@ export default function PaymentTable() {
               </td>
               <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
 
-              {vm.payments.map((p) => (
-                <td key={p.id} colSpan={3} style={tdDim} />
-              ))}
+              {vm.payments.map((p) => {
+                const total = paymentGrandTotals[p.id];
+                return (
+                  <React.Fragment key={p.id}>
+                    <td style={tdTotalNum}>{total.shipped > 0 ? total.shipped.toLocaleString() : ""}</td>
+                    <td style={tdDim} />
+                    <td style={tdTotalNum}>{total.amount > 0 ? money(total.amount) : ""}</td>
+                  </React.Fragment>
+                );
+              })}
 
               <td style={tdTotalNum}>{vm.grandTotalOrderQuantity.toLocaleString()}</td>
               <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
@@ -256,9 +287,9 @@ export default function PaymentTable() {
 function FragmentPayCols() {
   return (
     <>
-      <th style={thRight}>Shipped Qty</th>
-      <th style={thRight}>U/price</th>
-      <th style={thRight}>Amount</th>
+      <th style={{ ...thRight, width: 90 }}>Shipped Qty</th>
+      <th style={{ ...thRight, width: 80 }}>U/price</th>
+      <th style={{ ...thRight, width: 90 }}>Amount</th>
     </>
   );
 }
