@@ -57,14 +57,14 @@ export default function PaymentTable() {
     return result;
   }, []);
 
-    const filteredData = useMemo(() => {
+  const filteredData = useMemo(() => {
     const filteredConsumptions = mock.consumptions.filter((c) => {
       // 모든 활성 필터 조건을 만족해야 함 (AND)
       return Object.entries(filters).every(([key, filterVal]) => {
         if (!filterVal || filterVal === "All") return true;
         const colDef = COLUMNS.find((col) => col.key === key);
         if (!colDef) return true;
-        
+
         const rowVal = String(colDef.getValue(c));
         return rowVal === filterVal;
       });
@@ -76,9 +76,9 @@ export default function PaymentTable() {
     } as MockData;
   }, [filters]);
 
-    const vm = buildTableModel(filteredData as MockData);
+  const vm = buildTableModel(filteredData as MockData);
 
-      const handleToggleSearch = () => {
+  const handleToggleSearch = () => {
     setIsSearchOpen((prev) => !prev);
     // 닫을 때 필터 초기화 여부는 기획에 따라 다르지만, 보통 유지하거나 초기화함. 
     // 여기서는 유지.
@@ -88,7 +88,7 @@ export default function PaymentTable() {
     setFilters((prev) => ({ ...prev, [key]: val }));
   };
 
-   return (
+  return (
     <div style={{ padding: 20 }}>
       {/* 상단 툴바 / Search Toggle */}
       <div style={{ marginBottom: 16, display: "flex", gap: 10, alignItems: "center" }}>
@@ -122,11 +122,53 @@ export default function PaymentTable() {
               </th>
 
               {vm.payments.map((p) => (
-                <th key={p.id} colSpan={3} style={thGroup}>
-                  Payable (payment #{p.id})
-                  <div style={{ fontWeight: 400, fontSize: 12, marginTop: 6, opacity: 0.85 }}>
-                    Due: {new Date(p.paymentDueDate).toISOString().slice(0, 10)} / Status:{" "}
-                    {p.paymentStatus}
+                <th key={p.id} colSpan={3} style={{ ...thGroup, verticalAlign: "top", minWidth: 260 }}>
+                  <div style={{ marginBottom: 12, fontSize: 14, fontWeight: 700, color: "#111827" }}>
+                    Payable (payment #{p.id})
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "6px 0", fontSize: 13, fontWeight: 400 }}>
+                    
+                    {/* Payment Due */}
+                    <div style={{ color: "#374151", fontWeight: 600 }}>Payment Due</div>
+                    <div style={{ color: "#111827" }}>
+                      {p.paymentDueDate ? new Date(p.paymentDueDate).toISOString().slice(0, 10).replace(/-/g, '.') : "-"}
+                    </div>
+
+                    {/* Payment Date & Status */}
+                    <div style={{ color: "#374151", fontWeight: 600 }}>Payment Date</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ color: "#111827" }}>{p.paidAt && new Date(p.paidAt).toISOString().slice(0, 10).replace(/-/g, '.')}</span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          fontWeight: 600,
+                          background: p.paymentStatus === "PAID" ? "#dbeafe" : "#f3f4f6",
+                          color: p.paymentStatus === "PAID" ? "#1e40af" : "#4b5563",
+                        }}
+                      >
+                        {p.paymentStatus}
+                      </span>
+                    </div>
+
+                    {/* Attachment */}
+                    <div style={{ color: "#374151", fontWeight: 600 }}>Attachment</div>
+                    <div>
+                      {[...(p.sourcingFiles || []), ...(p.financeFiles || [])].length > 0 ? (
+                        <div style={{ display: "inline-flex", alignItems: "center", background: "#f1f5f9", padding: "2px 8px", borderRadius: 4, border: "1px solid #e2e8f0", fontSize: 12, color: "#475569" }}>
+                          File...
+                        </div>
+                      ) : (
+                        <span style={{ color: "#9ca3af" }}>-</span>
+                      )}
+                    </div>
+
+                    {/* Memo */}
+                    <div style={{ color: "#374151", fontWeight: 600 }}>Memo</div>
+                    <div style={{ whiteSpace: "normal", wordBreak: "break-all", color: "#111827" }}>
+                      {p.memo || <span style={{ color: "#9ca3af" }}>-</span>}
+                    </div>
                   </div>
                 </th>
               ))}
@@ -155,7 +197,7 @@ export default function PaymentTable() {
                     </select>
                   </th>
                 ))}
-                
+
                 {/* Payable / Total 영역은 검색 필터 없음 (Ordered 기준 필터링) 
                     남은 colspan 채우기:
                     - Payments: 3 * payments.length
@@ -168,7 +210,7 @@ export default function PaymentTable() {
             {/* 3) 컬럼 헤더 */}
             <tr>
               {COLUMNS.map((col) => (
-                <th key={col.key} style={{ ...th, ...(col.key === 'orderAmount' ? {...thRight, ...dividerRight} : (col.style?.textAlign === 'right' ? thRight : th)) }}>
+                <th key={col.key} style={{ ...th, ...(col.key === 'orderAmount' ? { ...thRight, ...dividerRight } : (col.style?.textAlign === 'right' ? thRight : th)) }}>
                   {col.label}
                 </th>
               ))}
@@ -184,29 +226,29 @@ export default function PaymentTable() {
             </tr>
           </thead>
 
-        <tbody>
-          {vm.groups.map((g) => (
-            <GroupSection key={g.salesOrderId} group={g} paymentIds={vm.payments.map((p) => p.id)} />
-          ))}
-
-          {/* Grand Total */}
-          <tr>
-            <td style={tdTotalLabel} colSpan={7}>
-              G.TTL
-            </td>
-            <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
-
-            {vm.payments.map((p) => (
-              <td key={p.id} colSpan={3} style={tdDim} />
+          <tbody>
+            {vm.groups.map((g) => (
+              <GroupSection key={g.salesOrderId} group={g} paymentIds={vm.payments.map((p) => p.id)} />
             ))}
 
-            <td style={tdTotalNum}>{vm.grandTotalOrderQuantity.toLocaleString()}</td>
-            <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
-          </tr>
-        </tbody>
-      </table>
+            {/* Grand Total */}
+            <tr>
+              <td style={tdTotalLabel} colSpan={7}>
+                G.TTL
+              </td>
+              <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
+
+              {vm.payments.map((p) => (
+                <td key={p.id} colSpan={3} style={tdDim} />
+              ))}
+
+              <td style={tdTotalNum}>{vm.grandTotalOrderQuantity.toLocaleString()}</td>
+              <td style={tdTotalNum}>{money(vm.grandTotalOrderAmount)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
   );
 }
 
